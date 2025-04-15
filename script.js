@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set crossOrigin to anonymous to avoid tainted canvas
     watermarkLogo.crossOrigin = "anonymous";
-    watermarkLogo.src = 'assets/logo.png';
     
     // Handle file upload
     imageUpload.addEventListener('change', function(e) {
@@ -108,12 +107,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Use setTimeout to allow the loading overlay to appear before processing
         setTimeout(() => {
+            // Create a high-resolution canvas for better quality
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
             // Set canvas dimensions to match the uploaded image
             canvas.width = uploadedImage.width;
             canvas.height = uploadedImage.height;
+            
+            // Enable high-quality image rendering
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             
             // Draw the uploaded image on the canvas
             ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
@@ -139,8 +143,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function applyWatermarkToCanvas(ctx, canvas, watermarkLogo) {
         // Calculate watermark dimensions based on the size setting
         const size = parseFloat(watermarkSize.value);
-        const watermarkWidth = canvas.width * size;
-        const watermarkHeight = (watermarkLogo.height / watermarkLogo.width) * watermarkWidth;
+        const watermarkWidth = Math.round(canvas.width * size); // Round to whole pixels
+        const aspectRatio = watermarkLogo.height / watermarkLogo.width;
+        const watermarkHeight = Math.round(watermarkWidth * aspectRatio); // Maintain aspect ratio
         
         // Calculate watermark position based on the position setting
         let x, y;
@@ -148,46 +153,46 @@ document.addEventListener('DOMContentLoaded', function() {
         
         switch (watermarkPosition.value) {
             case 'center':
-                x = (canvas.width - watermarkWidth) / 2;
-                y = (canvas.height - watermarkHeight) / 2;
+                x = Math.round((canvas.width - watermarkWidth) / 2);
+                y = Math.round((canvas.height - watermarkHeight) / 2);
                 break;
             case 'top-left':
-                x = padding;
-                y = padding;
+                x = Math.round(padding);
+                y = Math.round(padding);
                 break;
             case 'top-right':
-                x = canvas.width - watermarkWidth - padding;
-                y = padding;
+                x = Math.round(canvas.width - watermarkWidth - padding);
+                y = Math.round(padding);
                 break;
             case 'bottom-left':
-                x = padding;
-                y = canvas.height - watermarkHeight - padding;
+                x = Math.round(padding);
+                y = Math.round(canvas.height - watermarkHeight - padding);
                 break;
             case 'bottom-right':
             default:
-                x = canvas.width - watermarkWidth - padding;
-                y = canvas.height - watermarkHeight - padding;
+                x = Math.round(canvas.width - watermarkWidth - padding);
+                y = Math.round(canvas.height - watermarkHeight - padding);
                 break;
         }
         
         // Set watermark opacity
         ctx.globalAlpha = parseFloat(watermarkOpacity.value);
         
-        // Draw the watermark
+        // Draw the watermark with high quality settings
         ctx.drawImage(watermarkLogo, x, y, watermarkWidth, watermarkHeight);
         
         // Reset global alpha
         ctx.globalAlpha = 1.0;
         
-        // Display the result
-        resultImage.src = canvas.toDataURL('image/png');
+        // Display the result with high quality
+        resultImage.src = canvas.toDataURL('image/png', 1.0); // Use maximum quality
         resultContainer.style.display = 'block';
         
         // Scroll to result
         resultContainer.scrollIntoView({ behavior: 'smooth' });
         
-        // Update download link
-        downloadBtn.href = canvas.toDataURL('image/png');
+        // Update download link with high quality
+        downloadBtn.href = canvas.toDataURL('image/png', 1.0);
         
         hideLoading();
     }
@@ -213,26 +218,35 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingOverlay.style.display = 'none';
     }
     
-    // Pre-load the watermark logo to avoid CORS issues
+    // Pre-load the watermark logo to avoid CORS issues and ensure high quality
     function preloadWatermark() {
         // Create a new image element for the watermark
         const tempImg = new Image();
         tempImg.crossOrigin = "anonymous";
         
         tempImg.onload = function() {
-            // Create a temporary canvas to draw the watermark
+            // Create a high-resolution temporary canvas to draw the watermark
             const tempCanvas = document.createElement('canvas');
+            
+            // Use the original dimensions of the logo for maximum quality
             tempCanvas.width = tempImg.width;
             tempCanvas.height = tempImg.height;
             
-            // Draw the watermark on the canvas
+            // Get the context and enable high quality
             const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.drawImage(tempImg, 0, 0);
+            tempCtx.imageSmoothingEnabled = true;
+            tempCtx.imageSmoothingQuality = 'high';
             
-            // Convert the canvas to a data URL and set it as the source for the watermark logo
+            // Draw the watermark on the canvas at full resolution
+            tempCtx.drawImage(tempImg, 0, 0, tempImg.width, tempImg.height);
+            
+            // Convert the canvas to a high-quality data URL
             try {
-                const dataURL = tempCanvas.toDataURL('image/png');
+                const dataURL = tempCanvas.toDataURL('image/png', 1.0);
                 watermarkLogo = new Image();
+                watermarkLogo.onload = function() {
+                    console.log('Watermark loaded successfully at full quality');
+                };
                 watermarkLogo.src = dataURL;
             } catch (e) {
                 console.error("Error converting watermark to data URL:", e);
