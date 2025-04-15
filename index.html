@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Watermark Tool</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="Add professional watermarks to your images with this easy-to-use tool">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-image"></i> Image Watermark Tool</h1>
+            <p>Add your logo as a watermark to any image in seconds</p>
+        </header>
+        
+        <div class="upload-section">
+            <label for="imageUpload" class="upload-label">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Choose an image or drag it here</span>
+                <small>Supports JPG, PNG, WEBP, and GIF</small>
+                <input type="file" id="imageUpload" accept="image/*">
+            </label>
+        </div>
+        
+        <div class="controls" id="controls">
+            <h2><i class="fas fa-sliders-h"></i> Watermark Settings</h2>
+            
+            <div class="control-group">
+                <label for="watermarkOpacity">Watermark Opacity</label>
+                <div class="slider-container">
+                    <input type="range" id="watermarkOpacity" min="0.1" max="1" step="0.1" value="0.5">
+                    <span id="opacityValue">0.5</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="watermarkSize">Watermark Size</label>
+                <div class="slider-container">
+                    <input type="range" id="watermarkSize" min="0.1" max="0.5" step="0.05" value="0.2">
+                    <span id="sizeValue">0.2</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="watermarkPosition">Position</label>
+                <select id="watermarkPosition">
+                    <option value="center">Center</option>
+                    <option value="top-left">Top Left</option>
+                    <option value="top-right">Top Right</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="bottom-right" selected>Bottom Right</option>
+                </select>
+            </div>
+            
+            <button id="applyWatermark" class="btn primary-btn">
+                <i class="fas fa-magic"></i> Apply Watermark
+            </button>
+        </div>
+        
+        <div class="preview-container" id="previewContainer">
+            <h2><i class="fas fa-eye"></i> Original Image</h2>
+            <div class="preview-wrapper">
+                <img id="imagePreview" alt="Preview">
+            </div>
+        </div>
+        
+        <div class="result-container" id="resultContainer">
+            <h2><i class="fas fa-check-circle"></i> Watermarked Image</h2>
+            <div class="result-wrapper">
+                <img id="resultImage" alt="Result">
+            </div>
+            <div class="action-buttons">
+                <a id="downloadBtn" class="btn primary-btn" download="watermarked_image.png">
+                    <i class="fas fa-download"></i> Download Image
+                </a>
+                <button id="newImageBtn" class="btn secondary-btn">
+                    <i class="fas fa-redo"></i> Process New Image
+                </button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 Image Watermark Tool | All Rights Reserved</p>
+            <p><small>Easily add watermarks to protect your intellectual property</small></p>
+        </footer>
+    </div>
+    
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Processing your image...</p>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
